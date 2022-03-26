@@ -20,6 +20,8 @@ func CommandListener(w *engine.World) {
 		text, _ := reader.ReadString('\n')
 		// convert CRLF to LF
 		text = strings.Replace(text, "\n", "", -1)
+		//for windows :
+		text = strings.Replace(text, "\r", "", -1)
 
 		if text == "exit" {
 			fmt.Println("You exit the game")
@@ -40,18 +42,50 @@ type Commander interface {
 
 type Command func(w *engine.World, param []string) (*engine.World, string)
 
+type ComandAlias int
+
+const (
+	cmd_north ComandAlias = iota
+	cmd_south
+	cmd_west
+	cmd_east
+	cmd_enter
+	cmd_out
+
+	cmd_look
+	cmd_help
+	cmd_inventory
+	cmd_take
+	cmd_drop
+	cmd_talk
+	cmd_exit
+)
+
+var CommandNames = map[ComandAlias]string{
+	cmd_north: "north",
+	cmd_south: "south",
+	cmd_west:  "west",
+	cmd_east:  "east",
+	cmd_enter: "enter",
+	cmd_out:   "out",
+	cmd_look:  "look",
+	cmd_exit:  "exit",
+	cmd_help:  "help",
+}
+
 func ParceCommand(w *engine.World, commandText string) string {
 	//TODO implement dificult commands from 2-3 words
 	CommandsMaper := make(map[string]Command)
 
-	CommandsMaper["north"] = MoveNorth
-	CommandsMaper["look"] = LookAround
-	CommandsMaper["south"] = MoveSouth
-	CommandsMaper["west"] = MoveWest
-	CommandsMaper["east"] = MoveEast
-	CommandsMaper["enter"] = MoveIn
-	CommandsMaper["out"] = MoveOut
-	CommandsMaper["exit"] = nil
+	CommandsMaper[CommandNames[cmd_north]] = MoveNorth
+	CommandsMaper[CommandNames[cmd_look]] = LookAround
+	CommandsMaper[CommandNames[cmd_south]] = MoveSouth
+	CommandsMaper[CommandNames[cmd_west]] = MoveWest
+	CommandsMaper[CommandNames[cmd_east]] = MoveEast
+	CommandsMaper[CommandNames[cmd_enter]] = MoveIn
+	CommandsMaper[CommandNames[cmd_out]] = MoveOut
+	CommandsMaper[CommandNames[cmd_exit]] = nil
+	CommandsMaper[CommandNames[cmd_help]] = Help
 
 	action := CommandsMaper[commandText]
 
@@ -169,6 +203,25 @@ func LookAround(w *engine.World, param []string) (*engine.World, string) {
 
 func Help(w *engine.World, param []string) (*engine.World, string) {
 	//TODO implement it
+	comandsDescription := map[ComandAlias]string{
+		cmd_north: "Move Hero to North.",
+		cmd_south: "Move Hero to South.",
+		cmd_west:  "Move Hero to West.",
+		cmd_east:  "Move Hero to East.",
+		cmd_enter: "Hero will enter into cell or building",
+		cmd_out:   "Hero will go out from cell or building",
+		cmd_look:  "Hero will look around. output with explanation of current position, buildings, exits, directions, ect.",
+		cmd_help:  "This help",
+		cmd_exit:  "Exit game with no save progress",
+	}
+
+	//TODO : add detailed help
+	ret := "help on comands \r\n"
+	for k, v := range comandsDescription {
+		ret += CommandNames[k] + " : " + v + "\r\n"
+	}
+	return w, ret + "\r\n"
+
 	//validate(w,)
 	// if w.Player() != nil {
 	// 	Hero := w.Player()
