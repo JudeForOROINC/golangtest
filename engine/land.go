@@ -11,13 +11,14 @@ type Land struct {
 	cells       []*Cell
 	enterCell   *Cell
 	mobs        *Mobs
+	items       *Items
 }
 
 type Building struct {
 	id    int
 	name  string
 	cell  *Cell
-	items []*Items
+	items *Items
 	mobs  *Mobs
 }
 
@@ -25,7 +26,7 @@ type Cell struct {
 	id       int
 	name     string
 	building *Building
-	items    Items
+	items    *Items
 	north    *Cell
 	south    *Cell
 	east     *Cell
@@ -184,4 +185,18 @@ func (c *Cell) Name() string {
 }
 func (b *Building) Name() string {
 	return b.name
+}
+
+func (l *Land) Items() *Items {
+	return l.items
+}
+func (c *Cell) Items() *Items {
+	return c.items
+}
+func (b *Building) Items() *Items {
+	return b.items
+}
+
+type Itemer interface {
+	Items() *Items
 }

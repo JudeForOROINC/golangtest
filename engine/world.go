@@ -1,6 +1,8 @@
 package engine
 
-import "strconv"
+import (
+	"strconv"
+)
 
 type World struct {
 	locations []*Land
@@ -10,6 +12,10 @@ type World struct {
 	items     []*Item
 	age       int
 	player    *Mob
+}
+
+func intPointer(i int) *int {
+	return &i
 }
 
 // TODO made a system of links to store all worlds objects
@@ -53,7 +59,7 @@ func (w *World) CreateLocation(lt LandType, name *string, description *string) *
 	if description != nil {
 		ds = *description
 	}
-	land := Land{id: len(w.locations), name: dn, description: ds, mobs: &Mobs{}}
+	land := Land{id: len(w.locations), name: dn, description: ds, mobs: &Mobs{}, items: &Items{}}
 	land.mobs.location = &land
 	w.locations = append(w.locations, &land)
 
@@ -65,7 +71,7 @@ func (w *World) CreateCell(land *Land, name *string) *Cell {
 	if name != nil {
 		dn = *name
 	}
-	cell := Cell{id: len(w.cells), name: dn, land: land, mobs: &Mobs{}}
+	cell := Cell{id: len(w.cells), name: dn, land: land, mobs: &Mobs{}, items: &Items{}}
 	cell.mobs.location = &cell
 	w.cells = append(w.cells, &cell)
 
@@ -93,7 +99,7 @@ func (w *World) CreateBuilding(bt BuildingType, c *Cell) *Building {
 	case towerhall:
 		dn = "Tower"
 	}
-	b := Building{id: len(w.buildings), name: dn, cell: c, mobs: &Mobs{}}
+	b := Building{id: len(w.buildings), name: dn, cell: c, mobs: &Mobs{}, items: &Items{}}
 	b.mobs.location = &b
 	w.buildings = append(w.buildings, &b)
 
@@ -263,6 +269,17 @@ func WorlExample() *World {
 
 	b.Mobs().AddMob(w.player)
 
+	//====================items====================//
+
+	itm := w.CreateItem(food, strPointer("food"), intPointer(100), intPointer(10))
+	itm2 := w.CreateItem(wood, strPointer("wood"), intPointer(100), intPointer(10))
+	itm3 := w.CreateItem(wood, strPointer("firewood"), intPointer(100), intPointer(10))
+	itm4 := w.CreateItem(armor, strPointer("ringmail"), intPointer(100), intPointer(10))
+
+	towerhallCell.items.AddItem(itm)
+	towerhallCell.items.AddItem(itm2)
+	towerhallCell.items.AddItem(itm3)
+	towerhallCell.items.AddItem(itm4)
 	return &w
 }
 

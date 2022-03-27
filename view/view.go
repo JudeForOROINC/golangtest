@@ -141,7 +141,6 @@ func (m Mob) View() string {
 
 		ms := m.Mobs()
 		loc := ms.Location()
-
 		b, ok := loc.(*engine.Building)
 
 		if ok {
@@ -159,10 +158,42 @@ func (m Mob) View() string {
 			}
 		}
 
+		// var im engine.Itemer
+		im, ok := loc.(engine.Itemer)
+		if ok {
+			inv := im.Items()
+			if inv.Count() > 0 {
+				ret += Items{*inv}.View()
+				// for itm := inv.First(); itm != nil; inv.Next(itm) {
+				// 	ret += " - " + itm.Name() + " \r\n"
+				// }
+			}
+		}
+
 	}
 
 	ret += "My current health is " + strconv.Itoa(m.Hits()) + " \n"
 
+	return ret
+}
+
+type Items struct {
+	engine.Items
+}
+
+func (Is Items) View() string {
+	//os.EOL?
+	ret := " Inventory : \r\n"
+
+	if Is.Count() > 0 {
+		ret += " founded " + strconv.Itoa(Is.Count()) + " elsements \r\n"
+		for itm := Is.First(); itm != nil; itm = Is.Next(itm) {
+			ret += " - " + itm.Name() + " \r\n"
+		}
+	} else {
+		ret += " no elements \r\n"
+	}
+	// TODO get list of items
 	return ret
 }
 

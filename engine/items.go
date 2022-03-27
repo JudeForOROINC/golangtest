@@ -23,8 +23,52 @@ func (items *Items) AddItem(i *Item) (Items, error) {
 	// items.items = append(items.items, i)
 	e := items.items.PushBack(i)
 	i.owner = items
+
+	fmt.Println(i.owner == items)
+
 	i.ownersElement = e
 	return *items, nil
+}
+
+func (items *Items) Count() int {
+	return items.items.Len()
+}
+
+func (items *Items) First() *Item {
+	val := items.items.Front()
+
+	fmt.Println(val)
+
+	v, ok := val.Value.(*Item)
+	if ok {
+		return v
+	}
+	return v
+}
+
+func (items *Items) Next(itm *Item) *Item {
+	fmt.Println("Compare")
+
+	// fmt.Println(itm.owner)
+	// fmt.Println(items)
+	// fmt.Println(itm.owner == items)
+	// fmt.Println(&itm.owner == &items)
+	// fmt.Println(*itm.owner == *items)
+	if *itm.owner == *items { // Why not working???
+		n := itm.ownersElement.Next()
+
+		// val := items.items.Front()
+
+		// fmt.Println(val)
+		if n != nil {
+
+			v, ok := n.Value.(*Item)
+			if ok {
+				return v
+			}
+		}
+	}
+	return nil
 }
 
 func (items *Items) DeleteItem(i *Item) (Items, error) {
@@ -54,6 +98,10 @@ func (item *Item) MoveTo(items *Items) {
 	}
 
 	items.AddItem(item)
+}
+
+func (item *Item) Name() string {
+	return item.name
 }
 
 func Main() {
