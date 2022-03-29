@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"example.com/test/engine"
@@ -62,18 +63,25 @@ const (
 )
 
 var CommandNames = map[ComandAlias]string{
-	cmd_north: "north",
-	cmd_south: "south",
-	cmd_west:  "west",
-	cmd_east:  "east",
-	cmd_enter: "enter",
-	cmd_out:   "out",
-	cmd_look:  "look",
-	cmd_exit:  "exit",
-	cmd_help:  "help",
+	cmd_north:     "north",
+	cmd_south:     "south",
+	cmd_west:      "west",
+	cmd_east:      "east",
+	cmd_enter:     "enter",
+	cmd_out:       "out",
+	cmd_look:      "look",
+	cmd_exit:      "exit",
+	cmd_help:      "help",
+	cmd_inventory: "inv",
+	cmd_take:      "take",
 }
 
 func ParceCommand(w *engine.World, commandText string) string {
+
+	parts := strings.Split(commandText, " ")
+
+	fmt.Println(parts)
+	fmt.Println(len(parts))
 	//TODO implement dificult commands from 2-3 words
 	CommandsMaper := make(map[string]Command)
 
@@ -86,11 +94,16 @@ func ParceCommand(w *engine.World, commandText string) string {
 	CommandsMaper[CommandNames[cmd_out]] = MoveOut
 	CommandsMaper[CommandNames[cmd_exit]] = nil
 	CommandsMaper[CommandNames[cmd_help]] = Help
+	CommandsMaper[CommandNames[cmd_inventory]] = Inventory
+	CommandsMaper[CommandNames[cmd_take]] = Take
 
-	action := CommandsMaper[commandText]
+	first := parts[0]
+
+	action := CommandsMaper[first]
 
 	if action != nil {
-		_, text := action(w, []string{commandText})
+		_, text := action(w, parts[1:])
+		// _, text := action(w, []string{parts[1:]})
 		return text
 	}
 
@@ -192,27 +205,109 @@ func LookAround(w *engine.World, param []string) (*engine.World, string) {
 
 		look := view.Mob{*Hero}
 
-		// if engine.IsNil(Hero.Mobs().Location.().North()) {
-		// 	return w, "Command Look Around : north way is blocked" // error = TODO made comand . name , etc
-		// }
-		// Hero.Move(engine.North)
 		return w, "Command Look Around : " + look.View()
 	}
 	return w, "Command Look Around : Invalid Player"
 }
 
+func Inventory(w *engine.World, param []string) (*engine.World, string) {
+	//validate(w,)
+	cn := "COMAND INVENTORY :"
+	ret := ""
+	if w.Player() != nil {
+		Hero := w.Player()
+
+		// if Hero.Items().Count() > 0 {
+		ret += cn + view.Items{*Hero.Items()}.View()
+		return w, ret
+	}
+	return w, "Command Look Around : Invalid Player"
+}
+
+func Take(w *engine.World, param []string) (*engine.World, string) {
+	//validate(w,)
+	cn := "COMAND TAKE :"
+	ret := ""
+	if w.Player() != nil {
+		Hero := w.Player()
+		loc := Hero.Mobs().Location()
+		ims, ok := loc.(engine.Itemer)
+		if !ok || ims.Items().Count() == 0 {
+			return w, cn + " No items found!"
+		} else {
+			source := ims.Items()
+			if len(param) > 0 {
+				if param[0] == "all" {
+					//TODO implement take all
+					ret += cn + "takes \r\n"
+					key := 0
+					for i := 0; source.Count() > 0 && i < 10; i++ {
+						_, r1 := Take(w, []string{"1"})
+						key++
+						ret += strconv.Itoa(i) + ") " + r1 + "\r\n"
+
+					}
+					ret += " total " + strconv.Itoa(key) + " items"
+
+					return w, ret
+				}
+
+				no, err := strconv.Atoi(param[0])
+				if err != nil {
+					return w, cn + " Unknown command param"
+				}
+
+				if no > source.Count() {
+					return w, cn + "No such number"
+				}
+				key := 0
+				for itm := source.First(); itm != nil; itm = source.Next(itm) {
+					key++
+					if key == no {
+						Hero.Take(itm)
+						return w, cn + " taken 1 item " + itm.Name()
+					}
+				}
+
+			}
+
+			// loc := Hero.Mobs().Location()
+			// ims, ok := loc.(engine.Itemer)
+			// if ok {
+			// 	if no > ims.Items().Count() {
+			// 		return w, cn + "No such number"
+			// 	}
+
+			// key := 0
+			// for itm := ims.Items().First(); itm != nil; itm = ims.Items().Next(itm) {
+			// 	key++
+			// 	if key == no {
+			// 		Hero.Take(itm)
+			// 		return w, cn + " taken 1 item " + itm.Name()
+			// 	}
+			// }
+			// }
+		}
+		// if Hero.Items().Count() > 0 {
+		// ret += cn + view.Items{*Hero.Items()}.View()
+		return w, ret
+	}
+	return w, cn + " Invalid Player"
+}
+
 func Help(w *engine.World, param []string) (*engine.World, string) {
 	//TODO implement it
 	comandsDescription := map[ComandAlias]string{
-		cmd_north: "Move Hero to North.",
-		cmd_south: "Move Hero to South.",
-		cmd_west:  "Move Hero to West.",
-		cmd_east:  "Move Hero to East.",
-		cmd_enter: "Hero will enter into cell or building",
-		cmd_out:   "Hero will go out from cell or building",
-		cmd_look:  "Hero will look around. output with explanation of current position, buildings, exits, directions, ect.",
-		cmd_help:  "This help",
-		cmd_exit:  "Exit game with no save progress",
+		cmd_north:     "Move Hero to North.",
+		cmd_south:     "Move Hero to South.",
+		cmd_west:      "Move Hero to West.",
+		cmd_east:      "Move Hero to East.",
+		cmd_enter:     "Hero will enter into cell or building",
+		cmd_out:       "Hero will go out from cell or building",
+		cmd_look:      "Hero will look around. output with explanation of current position, buildings, exits, directions, ect.",
+		cmd_help:      "This help",
+		cmd_exit:      "Exit game with no save progress",
+		cmd_inventory: "Hero inventory review",
 	}
 
 	//TODO : add detailed help

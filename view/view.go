@@ -187,8 +187,10 @@ func (Is Items) View() string {
 
 	if Is.Count() > 0 {
 		ret += " founded " + strconv.Itoa(Is.Count()) + " elsements \r\n"
+		key := 0
 		for itm := Is.First(); itm != nil; itm = Is.Next(itm) {
-			ret += " - " + itm.Name() + " \r\n"
+			key++
+			ret += strconv.Itoa(key) + ") - " + itm.Name() + " \r\n"
 		}
 	} else {
 		ret += " no elements \r\n"

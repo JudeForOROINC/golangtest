@@ -280,6 +280,7 @@ func WorlExample() *World {
 	towerhallCell.items.AddItem(itm2)
 	towerhallCell.items.AddItem(itm3)
 	towerhallCell.items.AddItem(itm4)
+
 	return &w
 }
 

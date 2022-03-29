@@ -146,6 +146,18 @@ func main() {
 
 	fmt.Println(view.Mob{*pl}.View())
 
+	fmt.Print("I want to move south : ===================\n")
+
+	pl.Move(engine.South)
+
+	fmt.Println(view.Mob{*pl}.View())
+
+	// fmt.Print("I want to take all : ===================\n")
+
+	// conrtoller.Take(w, []string{"all"})
+
+	// fmt.Println(view.Mob{*pl}.View())
+
 	// fmt.Print("I want to move north : ===================\n")
 
 	// pl.Move(engine.North)

@@ -47,7 +47,7 @@ func (items *Items) First() *Item {
 }
 
 func (items *Items) Next(itm *Item) *Item {
-	fmt.Println("Compare")
+	// fmt.Println("Compare")
 
 	// fmt.Println(itm.owner)
 	// fmt.Println(items)
@@ -103,6 +103,8 @@ func (item *Item) MoveTo(items *Items) {
 func (item *Item) Name() string {
 	return item.name
 }
+
+// func (item *Item)
 
 func Main() {
 	fmt.Println("new module")

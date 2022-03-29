@@ -126,3 +126,12 @@ func (ms *Mobs) Location() Navigation {
 func (m *Mob) Hits() int {
 	return m.hp
 }
+
+func (m *Mob) Take(itm *Item) *Items {
+	itm.MoveTo(&m.items)
+	return &m.items
+}
+
+func (m *Mob) Items() *Items {
+	return &m.items
+}
