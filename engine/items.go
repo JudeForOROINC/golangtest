@@ -24,7 +24,7 @@ func (items *Items) AddItem(i *Item) (Items, error) {
 	e := items.items.PushBack(i)
 	i.owner = items
 
-	fmt.Println(i.owner == items)
+	// fmt.Println(i.owner == items)
 
 	i.ownersElement = e
 	return *items, nil
@@ -37,7 +37,7 @@ func (items *Items) Count() int {
 func (items *Items) First() *Item {
 	val := items.items.Front()
 
-	fmt.Println(val)
+	// fmt.Println(val)
 
 	v, ok := val.Value.(*Item)
 	if ok {

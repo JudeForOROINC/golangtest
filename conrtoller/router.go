@@ -80,8 +80,8 @@ func ParceCommand(w *engine.World, commandText string) string {
 
 	parts := strings.Split(commandText, " ")
 
-	fmt.Println(parts)
-	fmt.Println(len(parts))
+	// fmt.Println(parts)
+	// fmt.Println(len(parts))
 	//TODO implement dificult commands from 2-3 words
 	CommandsMaper := make(map[string]Command)
 
@@ -308,6 +308,7 @@ func Help(w *engine.World, param []string) (*engine.World, string) {
 		cmd_help:      "This help",
 		cmd_exit:      "Exit game with no save progress",
 		cmd_inventory: "Hero inventory review",
+		cmd_take:      "Hero can take all or 1 item from location. syntax : take all ; take 1",
 	}
 
 	//TODO : add detailed help
