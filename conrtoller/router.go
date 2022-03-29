@@ -74,6 +74,7 @@ var CommandNames = map[ComandAlias]string{
 	cmd_help:      "help",
 	cmd_inventory: "inv",
 	cmd_take:      "take",
+	cmd_drop:      "drop",
 }
 
 func ParceCommand(w *engine.World, commandText string) string {
@@ -96,6 +97,7 @@ func ParceCommand(w *engine.World, commandText string) string {
 	CommandsMaper[CommandNames[cmd_help]] = Help
 	CommandsMaper[CommandNames[cmd_inventory]] = Inventory
 	CommandsMaper[CommandNames[cmd_take]] = Take
+	CommandsMaper[CommandNames[cmd_drop]] = Drop
 
 	first := parts[0]
 
@@ -295,6 +297,63 @@ func Take(w *engine.World, param []string) (*engine.World, string) {
 	return w, cn + " Invalid Player"
 }
 
+func Drop(w *engine.World, param []string) (*engine.World, string) {
+	//validate(w,)
+	cn := "COMAND DROP :"
+	ret := ""
+	if w.Player() != nil {
+		Hero := w.Player()
+		// loc := Hero.Mobs().Location()
+		// ims, ok := loc.(engine.Itemer)
+		// if !ok {
+		// 	return w, cn + " Distanation not found!"
+		// }
+
+		if Hero.Items().Count() == 0 {
+			return w, cn + " No items found!"
+		} else {
+			// distanation := ims.Items()
+			if len(param) > 0 {
+				if param[0] == "all" {
+					//TODO implement Drop all
+					ret += cn + "drop all \r\n"
+					key := 0
+					for i := 0; Hero.Items().Count() > 0 && i < 10; i++ {
+						_, r1 := Drop(w, []string{"1"})
+						key++
+						ret += strconv.Itoa(i) + ") " + r1 + "\r\n"
+
+					}
+					ret += " total " + strconv.Itoa(key) + " items"
+
+					return w, ret
+				}
+
+				no, err := strconv.Atoi(param[0])
+				if err != nil {
+					return w, cn + " Unknown command param"
+				}
+
+				if no > Hero.Items().Count() {
+					return w, cn + "No such number"
+				}
+				key := 0
+				for itm := Hero.Items().First(); itm != nil; itm = Hero.Items().Next(itm) {
+					key++
+					if key == no {
+						Hero.Drop(itm)
+						return w, cn + " Droped 1 item " + itm.Name()
+					}
+				}
+
+			}
+
+		}
+		return w, ret
+	}
+	return w, cn + " Invalid Player"
+}
+
 func Help(w *engine.World, param []string) (*engine.World, string) {
 	//TODO implement it
 	comandsDescription := map[ComandAlias]string{
@@ -309,6 +368,7 @@ func Help(w *engine.World, param []string) (*engine.World, string) {
 		cmd_exit:      "Exit game with no save progress",
 		cmd_inventory: "Hero inventory review",
 		cmd_take:      "Hero can take all or 1 item from location. syntax : take all ; take 1",
+		cmd_drop:      "Hero can drop all or 1 item to location. syntax : drop all ; drop 1",
 	}
 
 	//TODO : add detailed help

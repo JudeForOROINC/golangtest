@@ -135,3 +135,13 @@ func (m *Mob) Take(itm *Item) *Items {
 func (m *Mob) Items() *Items {
 	return &m.items
 }
+
+func (m *Mob) Drop(itm *Item) *Items {
+	loc := m.mobs.location
+	itms, ok := loc.(Itemer)
+	if ok {
+		itm.MoveTo(itms.Items())
+		//TODO report sucess
+	}
+	return &m.items
+}
