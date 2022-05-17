@@ -1,7 +1,10 @@
 package engine
 
+import "encoding/json"
+
 type Land struct {
 	id          int
+	Ltype       LandType
 	name        string
 	description string
 	north       *Land
@@ -12,6 +15,13 @@ type Land struct {
 	enterCell   *Cell
 	mobs        *Mobs
 	items       *Items
+}
+
+func (l Land) MarshalJSON() ([]byte, error) {
+	str := ""
+	str += "ID: " + string(l.id) + ","
+	str += "Name: " + string(l.name)
+	return json.Marshal(str)
 }
 
 type Building struct {

@@ -5,12 +5,12 @@ import (
 )
 
 type World struct {
-	locations []*Land
-	cells     []*Cell
+	Locations []*Land
+	Cells     []*Cell
 	Mobs      []*Mob
-	buildings []*Building
-	items     []*Item
-	age       int
+	Buildings []*Building
+	Items     []*Item
+	Age       int
 	player    *Mob
 }
 
@@ -59,9 +59,9 @@ func (w *World) CreateLocation(lt LandType, name *string, description *string) *
 	if description != nil {
 		ds = *description
 	}
-	land := Land{id: len(w.locations), name: dn, description: ds, mobs: &Mobs{}, items: &Items{}}
+	land := Land{id: len(w.Locations), Ltype: lt, name: dn, description: ds, mobs: &Mobs{}, items: &Items{}}
 	land.mobs.location = &land
-	w.locations = append(w.locations, &land)
+	w.Locations = append(w.Locations, &land)
 
 	return &land
 }
@@ -71,9 +71,9 @@ func (w *World) CreateCell(land *Land, name *string) *Cell {
 	if name != nil {
 		dn = *name
 	}
-	cell := Cell{id: len(w.cells), name: dn, land: land, mobs: &Mobs{}, items: &Items{}}
+	cell := Cell{id: len(w.Cells), name: dn, land: land, mobs: &Mobs{}, items: &Items{}}
 	cell.mobs.location = &cell
-	w.cells = append(w.cells, &cell)
+	w.Cells = append(w.Cells, &cell)
 
 	return &cell
 }
@@ -99,9 +99,9 @@ func (w *World) CreateBuilding(bt BuildingType, c *Cell) *Building {
 	case towerhall:
 		dn = "Tower"
 	}
-	b := Building{id: len(w.buildings), name: dn, cell: c, mobs: &Mobs{}, items: &Items{}}
+	b := Building{id: len(w.Buildings), name: dn, cell: c, mobs: &Mobs{}, items: &Items{}}
 	b.mobs.location = &b
-	w.buildings = append(w.buildings, &b)
+	w.Buildings = append(w.Buildings, &b)
 
 	return &b
 }
@@ -126,8 +126,8 @@ const (
 )
 
 func (w World) CreateItem(it ItemType, name *string, weight *int, value *int) *Item {
-	i := Item{id: len(w.items), name: *name, value: *value, weight: *weight}
-	w.items = append(w.items, &i)
+	i := Item{id: len(w.Items), name: *name, value: *value, weight: *weight}
+	w.Items = append(w.Items, &i)
 	return &i
 }
 
@@ -223,8 +223,8 @@ func WorlExample() *World {
 	L20.LinkSouth(L25)
 	L24.LinkEast(L25)
 
-	for _, L := range w.locations {
-		Cl := w.CreateCell(L, strPointer("Cell "+strconv.Itoa(len(w.cells))))
+	for _, L := range w.Locations {
+		Cl := w.CreateCell(L, strPointer("Cell "+strconv.Itoa(len(w.Cells))))
 		L.LinkEnter(Cl)
 	}
 
@@ -281,6 +281,16 @@ func WorlExample() *World {
 	towerhallCell.items.AddItem(itm3)
 	towerhallCell.items.AddItem(itm4)
 
+	mobM := w.CreateMob("evil pig", 10, 100)
+	monster := Monster{}
+	monster.Mob = *mobM
+	loot := w.CreateItem(food, strPointer("fat"), intPointer(10), intPointer(10))
+	loot2 := w.CreateItem(food, strPointer("lard"), intPointer(10), intPointer(10))
+	monster.loot.AddItem(loot)
+	monster.loot.AddItem(loot2)
+
+	towerhallCell.Mobs().AddMob(&monster.Mob)
+	monster.Die()
 	return &w
 }
 

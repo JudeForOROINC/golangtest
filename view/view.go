@@ -105,6 +105,17 @@ func (c Cell) View() string {
 	return ret
 }
 
+func (ms *Mobs) ViewList() string {
+	ret := ""
+	if len(ms.Mobs.Mobs) > 0 {
+		ret += " Some monster here: \n"
+		for n, it := range ms.Mobs.Mobs {
+			ret += strconv.Itoa(n) + ") " + it.Name() + "\n"
+		}
+	}
+	return ret
+}
+
 func (b Building) View() string {
 	ret := "building " + b.Name() + "\n"
 	if !engine.IsNil(b.Exit()) {
@@ -127,6 +138,7 @@ func (ms Mobs) View() string {
 	// fmt.Println(name)
 	if len(ms.Mobs.Mobs) > 0 {
 		ret := "there are some monsters here " + strconv.Itoa(len(ms.Mobs.Mobs)) + " mobs number \n"
+		ret += ms.ViewList()
 		return ret
 	}
 	return " no monsters here. \n"

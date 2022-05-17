@@ -22,6 +22,7 @@ package main
 // }
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"example.com/test/conrtoller"
@@ -87,6 +88,16 @@ func (m *Mob) addItem(i *Item) {
 
 func main() {
 	fmt.Println("hell, World!")
+
+	names := []string{"one", "two", "", "tree"}
+
+	for _, val := range names {
+		if len(val) < 1 {
+			continue
+		}
+		fmt.Println(val)
+
+	}
 
 	// i := Item{id: 1, name: "food", weight: 1, value: 100}
 	// m := Mob{id: 1, name: "Monster", canRise: 200, money: 0}
@@ -205,6 +216,14 @@ func main() {
 	// pl.Move(engine.Out)
 
 	// fmt.Println(view.Mob{*pl}.View())
+
+	str, err := json.Marshal(w)
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(string(str))
 
 	conrtoller.CommandListener(w)
 
